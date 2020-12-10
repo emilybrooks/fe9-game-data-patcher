@@ -11,6 +11,8 @@ import fe9unit
 import fe9class
 import fe9item
 
+Debug = False;
+
 #-------------------------------------------------------------------------------
 # Patch data
 # Module: files such as fe9data_character or fe9data_class. they each contain
@@ -19,7 +21,6 @@ import fe9item
 # and integers (IntegerDataDictionary)
 # ID: Which data block to modify
 # Type: one entry in a data block. these are described in the DataDictionaries
-# TODO: I should properly document them on a wiki page or something later though
 # Data: What to write in that entry
 #-------------------------------------------------------------------------------
 def PatchData(Module, ID, Type, Data):
@@ -27,6 +28,7 @@ def PatchData(Module, ID, Type, Data):
 	global StringToPointer
 	global StringsToAdd
 	global PointerOffsetsToAdd
+	global Debug
 
 	Offset = Module.OffsetDictionary[ID]
 
@@ -42,7 +44,7 @@ def PatchData(Module, ID, Type, Data):
 		# we need to add it to the pointer offset table or it won't be read by the game
 		OriginalPointer = ReadIntFromOffset(FE9DataContents, Offset, 0x4, False)
 		if not OriginalPointer:
-			print("No pointer offset for " + Type)
+			if Debug: print("No pointer offset for " + Type)
 			AddedPointerOffsets = True
 			PointerOffsetsToAdd.append(Offset - 0x20)
 
@@ -54,7 +56,7 @@ def PatchData(Module, ID, Type, Data):
 
 			# if a string isn't in this dictionary, we need to add it to the end of the file
 			else:
-				print(Data + " is not in the string table")
+				if Debug: print(Data + " is not in the string table")
 				# Keep track of which offsets to write the new string's pointers to in a list
 				if Data not in StringsToAdd:
 					StringsToAdd[Data] = []
@@ -79,9 +81,16 @@ def PatchData(Module, ID, Type, Data):
 		raise Exception(Type + " isn't a valid tag")
 
 	# Modify the FE9Data file with the new change
-	print(Type, hex(int(Data)))
+	if Debug: print(Type, hex(int(Data)))
 	Data = ConvertIntToByteArray(Data, Length, Signed)
 	WriteBytesAtOffset(Data, FE9DataContents, Offset)
+
+#-------------------------------------------------------------------------------
+# print only if Debug is True
+#-------------------------------------------------------------------------------
+def DebugPrint(String):
+	if Debug:
+		print(String)
 
 #-------------------------------------------------------------------------------
 # GUI Layout
@@ -113,10 +122,12 @@ layout = [
 [
 	sg.Button("Patch", key="PatchButton")
 ],
+[
+	sg.Output(size=(55, 10), key="Output")
+],
 ]
 
-# TODO: Replace window title
-window = sg.Window("Window Title", layout)
+window = sg.Window("fe9 game data patcher", layout)
 
 #-------------------------------------------------------------------------------
 # Program Start (Event Loop)
@@ -135,27 +146,28 @@ while True:
 
 		OriginalFile = values["CMPFilePath"]
 		if not OriginalFile:
-			sg.Popup("You forgot to add the path to the system.cmp file")
+			print("Error: No CMP file provided")
 			continue
 
 		PatchFile = values["XMLFilePath"]
 		if not PatchFile:
-			sg.Popup("You forgot to add the path to the patch file")
+			print("Error: No patch file provided")
 			continue
 
 		NewFile = values["NewFilePath"]
 		if not NewFile:
-			sg.Popup("You forgot to add the path to the saved file")
+			# TODO: Can I just ask for the path when the user hits patch?
+			print("Error: No path to save patched file provided")
 			continue
 
 		with open(OriginalFile, mode="rb") as File:
 			File = File.read()
-# the game data file is slightly different for each build of the game
-# figure out which version by calculating the checksum
-# this is also handy for verifying that a valid system.cmp was provided
+			# the game data file is slightly different for each build of the game
+			# figure out which version by calculating the checksum
+			# this is also handy for verifying that a valid system.cmp was provided
 			Checksum = hashlib.sha256(File)
 			Checksum = Checksum.hexdigest()
-			print(Checksum)
+			DebugPrint(f"System.cmp checksum: {Checksum}")
 
 			Version = ""
 			if Checksum == "2d7e1ba67022aa50c9c67e5544288c447654014434960caba97134a3b884c1b4":
@@ -167,18 +179,19 @@ while True:
 
 			# TODO: Can I word this error in a better way?
 			if Version == "":
-				print("the system.cmp file is invalid")
+				print("The system.cmp file is invalid")
 				continue
 			print(f"System.cmp version: {Version}")
 
 			File = bytearray(File)
+			print("Decompressing...")
 			File = fe9LZ77.decompress(File)
-			print("Decompressed file")
 			CMPFile = cmp.CMPFile(File)
 
 		FE9DataContents = CMPFile.GetFileByName("FE8Data.bin")
 
 		# Read through the file to figure out where every data block is
+		print("Parsing system.cmp")
 
 		# header is 0x20 bytes long
 		FileReadIndex = 0x4
@@ -243,30 +256,33 @@ while True:
 			StringToPointer[String] = Pointer
 
 		# Parse the xml file
+		print("Parsing patch file")
 		tree = et.parse(PatchFile)
 		root = tree.getroot()
 
 		# characters
-		for character in root.iter('character'):
-			PID = character.attrib["id"]
-			print(PID)
-			for child in character:
+		for unit in root.iter('unit'):
+			PID = unit.attrib["id"]
+			DebugPrint(PID)
+			for child in unit:
 				PatchData(fe9unit, PID, child.tag, child.text)
+		print("Patched unit entries")
 
 		# classes
 		for job in root.iter('class'):
 			JID = job.attrib["id"]
-			print(JID)
+			DebugPrint(JID)
 			for child in job:
 				PatchData(fe9class, JID, child.tag, child.text)
+		print("Patched class entries")
 
 		# items
 		for item in root.iter('item'):
 			IID = item.attrib["id"]
-			print(IID)
+			DebugPrint(IID)
 			for child in item:
 				PatchData(fe9item, IID, child.tag, child.text)
-
+		print("Patched item entries")
 
 		if PointerOffsetsToAdd:
 			# get to the end of the pointer offset table
@@ -277,12 +293,13 @@ while True:
 				# Insert our new pointer offset and push everything down
 				FE9DataContents[FileReadIndex:FileReadIndex] = NewPointerOffset
 				FileReadIndex += 0x4
-				print("Added pointer offset " + str(hex(i)))
+				DebugPrint("Added pointer offset " + str(hex(i)))
 
 			# Change the length of the pointer offset table in the header as well
 			PointerOffsetCount += len(PointerOffsetsToAdd)
 			PointerOffsetCountBytes = ConvertIntToByteArray(PointerOffsetCount, 0x4, False)
 			WriteBytesAtOffset(PointerOffsetCountBytes, FE9DataContents, 0x8)
+			print("Updated pointer offsets")
 
 		# do this after adding pointer offsets because it shifts the rest of the file forward,
 		# which would mess up pointer calculation
@@ -298,7 +315,8 @@ while True:
 				FE9DataContents += ConvertStringToByteArray(i)
 				# add a 0x00 byte as a terminator
 				FE9DataContents += bytearray(0x1)
-				print("Added string " + i)
+				DebugPrint("Added string " + i)
+			print("Updated string table")
 
 		# If the filesize changed we have to modify the first 4 bytes
 		NewLength = len(FE9DataContents)
@@ -308,15 +326,15 @@ while True:
 		# Insert our modified FE8Data.bin and rebuild the cmp file
 		CMPFile.SetFile("FE8Data.bin", FE9DataContents, NewLength)
 		CMPFile.Rebuild()
+		print("Rebuilt the CMP file")
 
 		# save the new cmp file
 		with open(NewFile, mode="wb") as File:
 			print("Compressing file...")
 			FE9DataContents = fe9LZ77.compress(CMPFile.GetCMPFile())
-			print("done")
 			File.write(FE9DataContents)
 
-		sg.Popup("Patched successfully")
+		print("Patched successfully")
 
 #-------------------------------------------------------------------------------
 # Exit
