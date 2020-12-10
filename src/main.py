@@ -102,14 +102,14 @@ layout = [
 	sg.Text("System.cmp file to patch:")
 ],
 [
-	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/system_jp_compressed.cmp", key="CMPFilePath"),
+	sg.In("", key="CMPFilePath"),
 	sg.FileBrowse(file_types=(("CMP file", ".cmp"), ("All types", "*.*"))),
 ],
 [
 	sg.Text("Patch file:")
 ],
 [
-	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/patch.xml", key="XMLFilePath"),
+	sg.In("", key="XMLFilePath"),
 	sg.FileBrowse(file_types=(("XML file", ".xml"), ("All types", "*.*"))),
 ],
 [
