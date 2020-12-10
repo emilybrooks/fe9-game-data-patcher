@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import xml.etree.ElementTree as et
+import hashlib
 
 from io_helpers import *
 import fe9LZ77
@@ -89,12 +90,6 @@ sg.ChangeLookAndFeel("SystemDefaultForReal")
 
 layout = [
 [
-	sg.Text("Version:")
-],
-[
-	sg.Drop(size=(14,1), default_value="Japan", values=["Japan", "North America", "Europe"], key="VersionDrop"),
-],
-[
 	sg.Text("System.cmp file to patch:")
 ],
 [
@@ -153,11 +148,29 @@ while True:
 			sg.Popup("You forgot to add the path to the saved file")
 			continue
 
-		# TODO: check the checksum of the input file to make sure it's valid
-		# you should also be able to determine what region to select without asking the user
-
 		with open(OriginalFile, mode="rb") as File:
 			File = File.read()
+# the game data file is slightly different for each build of the game
+# figure out which version by calculating the checksum
+# this is also handy for verifying that a valid system.cmp was provided
+			Checksum = hashlib.sha256(File)
+			Checksum = Checksum.hexdigest()
+			print(Checksum)
+
+			Version = ""
+			if Checksum == "2d7e1ba67022aa50c9c67e5544288c447654014434960caba97134a3b884c1b4":
+				Version = "Japan"
+			elif Checksum == "fd6d9fc346c86f478c0c3acbf9c621b189ec633965f5617e943d26213f697137":
+				Version = "North America"
+			elif Checksum == "0b7929179b0ad1d4898d763665e9a3120e6b38d3aa0dc8f5e4759c9969ea269e":
+				Version = "Europe"
+
+			# TODO: Can I word this error in a better way?
+			if Version == "":
+				print("the system.cmp file is invalid")
+				continue
+			print(f"System.cmp version: {Version}")
+
 			File = bytearray(File)
 			File = fe9LZ77.decompress(File)
 			print("Decompressed file")
@@ -206,8 +219,6 @@ while True:
 			FileReadIndex += fe9item.BlockLength
 
 		# Parse the table of strings to keep track of their pointers
-		# TODO: Eventually calculate the start of this table dynamically
-		Version = values["VersionDrop"]
 		if Version == "Japan":
 			FileReadIndex = 0x14774
 		if Version == "North America":
