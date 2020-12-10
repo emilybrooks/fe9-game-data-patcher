@@ -113,13 +113,6 @@ layout = [
 	sg.FileBrowse(file_types=(("XML file", ".xml"), ("All types", "*.*"))),
 ],
 [
-	sg.Text("Save as...")
-],
-[
-	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/output.cmp", key="NewFilePath"),
-	sg.FileSaveAs(file_types=(("CMP file", ".cmp"), ("All types", "*.*"))),
-],
-[
 	sg.Button("Patch", key="PatchButton")
 ],
 [
@@ -154,11 +147,8 @@ while True:
 			print("Error: No patch file provided")
 			continue
 
-		NewFile = values["NewFilePath"]
-		if not NewFile:
-			# TODO: Can I just ask for the path when the user hits patch?
-			print("Error: No path to save patched file provided")
-			continue
+		NewFile = OriginalFile
+		NewFile = NewFile[:-4] + "_patched" + NewFile[-4:]
 
 		with open(OriginalFile, mode="rb") as File:
 			File = File.read()
@@ -260,7 +250,7 @@ while True:
 		tree = et.parse(PatchFile)
 		root = tree.getroot()
 
-		# characters
+		# units
 		for unit in root.iter('unit'):
 			PID = unit.attrib["id"]
 			DebugPrint(PID)
@@ -269,6 +259,7 @@ while True:
 		print("Patched unit entries")
 
 		# classes
+		# "class" is a keyword in python so job is used instead
 		for job in root.iter('class'):
 			JID = job.attrib["id"]
 			DebugPrint(JID)
@@ -333,7 +324,7 @@ while True:
 			print("Compressing file...")
 			FE9DataContents = fe9LZ77.compress(CMPFile.GetCMPFile())
 			File.write(FE9DataContents)
-
+		print(f"Wrote to {NewFile}")
 		print("Patched successfully")
 
 #-------------------------------------------------------------------------------
