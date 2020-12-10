@@ -6,13 +6,13 @@ StringDataDictionary = {
 "JID":            {"Offset": 0x00, "Length": 0x4},
 "MIID":           {"Offset": 0x04, "Length": 0x4},
 "MH_I":           {"Offset": 0x08, "Length": 0x4},
+# i think type 1 is the type referenced for weapon rank requirements
 "Type1":          {"Offset": 0x0C, "Length": 0x4},
-"Type2":          {"Offset": 0x10, "Length": 0x4},
-"Rank":           {"Offset": 0x14, "Length": 0x4},
-# i think trait 1 is what weapon rank is required to use it
-"Trait1":         {"Offset": 0x18, "Length": 0x4},
 # type 2 affects if it does physical or magical
 # it might affects weapon triangle?
+"Type2":          {"Offset": 0x10, "Length": 0x4},
+"Rank":           {"Offset": 0x14, "Length": 0x4},
+"Trait1":         {"Offset": 0x18, "Length": 0x4},
 "Trait2":         {"Offset": 0x1C, "Length": 0x4},
 "Trait3":         {"Offset": 0x20, "Length": 0x4},
 "Trait4":         {"Offset": 0x24, "Length": 0x4},

@@ -162,9 +162,9 @@ while True:
 			Version = ""
 			if Checksum == "2d7e1ba67022aa50c9c67e5544288c447654014434960caba97134a3b884c1b4":
 				Version = "Japan"
-			elif Checksum == "fd6d9fc346c86f478c0c3acbf9c621b189ec633965f5617e943d26213f697137":
+			if Checksum == "fd6d9fc346c86f478c0c3acbf9c621b189ec633965f5617e943d26213f697137":
 				Version = "North America"
-			elif Checksum == "0b7929179b0ad1d4898d763665e9a3120e6b38d3aa0dc8f5e4759c9969ea269e":
+			if Checksum == "0b7929179b0ad1d4898d763665e9a3120e6b38d3aa0dc8f5e4759c9969ea269e":
 				Version = "Europe"
 
 			# TODO: Can I word this error in a better way?
