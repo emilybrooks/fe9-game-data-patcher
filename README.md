@@ -6,13 +6,13 @@ Download the repository
 
 In the command line, navigate to the root directory
 
-Install the dependencies
+Install the dependencies  
 `pip3 install -r requirements.txt`
 
-Install setuptools
+Install setuptools  
 `pip3 install setuptools`
 
 Navigate to ./fe9LZ77module
 
-Build the module
+Build the module  
 `python3 setup.py install`
