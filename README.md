@@ -12,7 +12,7 @@ Install the dependencies
 Install setuptools
 `pip3 install setuptools`
 
-Navigate to ./fe9LZ77
+Navigate to ./fe9LZ77module
 
 Build the module
 `python3 setup.py install`
