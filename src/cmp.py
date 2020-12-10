@@ -1,4 +1,4 @@
-from fe9data_io import *
+from io_helpers import *
 
 class CMPFile:
 	# the entire cmp file

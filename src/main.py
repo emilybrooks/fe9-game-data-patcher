@@ -1,14 +1,14 @@
 import PySimpleGUI as sg
 import xml.etree.ElementTree as et
 
-from fe9data_io import *
+from io_helpers import *
 import fe9LZ77
-import cmpfile as cmp
+import cmp
 
-# TODO: go through the data in fe9character, etc and properly document them all
-import fe9data_character as fe9character
-import fe9data_class as fe9class
-import fe9data_item as fe9item
+# TODO: go through the data and properly document them all
+import fe9unit
+import fe9class
+import fe9item
 
 #-------------------------------------------------------------------------------
 # Patch data
@@ -98,21 +98,21 @@ layout = [
 	sg.Text("System.cmp file to patch:")
 ],
 [
-	sg.In("F:/Documents/GitHub/fe9-character-data-parser/src/system_jp_compressed.cmp", key="CMPFilePath"),
+	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/system_jp_compressed.cmp", key="CMPFilePath"),
 	sg.FileBrowse(file_types=(("CMP file", ".cmp"), ("All types", "*.*"))),
 ],
 [
 	sg.Text("Patch file:")
 ],
 [
-	sg.In("F:/Documents/GitHub/fe9-character-data-parser/src/patch.xml", key="XMLFilePath"),
+	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/patch.xml", key="XMLFilePath"),
 	sg.FileBrowse(file_types=(("XML file", ".xml"), ("All types", "*.*"))),
 ],
 [
 	sg.Text("Save as...")
 ],
 [
-	sg.In("F:/Documents/GitHub/fe9-character-data-parser/tools/system.cmp", key="NewFilePath"),
+	sg.In("F:/Documents/GitHub/fe9-game-data-patcher/ignore/output.cmp", key="NewFilePath"),
 	sg.FileSaveAs(file_types=(("CMP file", ".cmp"), ("All types", "*.*"))),
 ],
 [
@@ -174,16 +174,16 @@ while True:
 		PointerOffsetCount = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
 		# then some unimportant stuff until 0x2C
 		FileReadIndex = 0x2C
-		fe9character.NumberOfBlocks = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
+		fe9unit.NumberOfBlocks = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
 		FileReadIndex += 0x4
 
 		# every character gets added to a dictionary,
 		# with their PID as the key and their offset in the file as the value
-		for i in range(fe9character.NumberOfBlocks):
+		for i in range(fe9unit.NumberOfBlocks):
 			PIDPointer = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
 			PID = ReadStringFromPointer(FE9DataContents, PIDPointer, 0x20)
-			fe9character.OffsetDictionary[PID] = FileReadIndex
-			FileReadIndex += fe9character.BlockLength
+			fe9unit.OffsetDictionary[PID] = FileReadIndex
+			FileReadIndex += fe9unit.BlockLength
 
 		fe9class.NumberOfBlocks = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
 		FileReadIndex += 0x4
@@ -240,7 +240,7 @@ while True:
 			PID = character.attrib["id"]
 			print(PID)
 			for child in character:
-				PatchData(fe9character, PID, child.tag, child.text)
+				PatchData(fe9unit, PID, child.tag, child.text)
 
 		# classes
 		for job in root.iter('class'):
