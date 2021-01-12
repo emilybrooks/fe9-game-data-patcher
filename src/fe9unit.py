@@ -5,7 +5,6 @@ OffsetDictionary = {}
 StringDataDictionary = {
 "PID":        {"Offset": 0x00, "Length": 0x4},
 "MPID":       {"Offset": 0x04, "Length": 0x4},
-# supposedly 0x8 to 0xB is always 0
 "FID":        {"Offset": 0x0C, "Length": 0x4},
 "JID":        {"Offset": 0x10, "Length": 0x4},
 "Affinity":   {"Offset": 0x14, "Length": 0x4},
@@ -18,26 +17,17 @@ StringDataDictionary = {
 }
 
 IntegerDataDictionary = {
-# this seems like it's a unique number for every unit in the game, maybe it's a unit id or something
-# ike is 1, titania is 2, oscar is 3, boyd is 4, rhys is 5
-"UnitIndex":          {"Offset": 0x30, "Length": 0x2, "Signed": False},
+"UnitIndex":           {"Offset": 0x30, "Length": 0x2, "Signed": False},
 
-# always 0
-#"Unk6": {"Offset": 0x32, "Length": 0x1, "Element": "CharacterUnk6Input", "Signed": False},
-
-"Unk7":                {"Offset": 0x33, "Length": 0x1, "Signed": False},
-
-# this is what their gauge is when they first join your party
-# after that it just carries over between maps
+# TODO: what does 0x33 control?
+"Unk_33":              {"Offset": 0x33, "Length": 0x1, "Signed": False},
 "LaguzGauge":          {"Offset": 0x34, "Length": 0x1, "Signed": False},
-
-# this seems to be 30 (0x1E) for every character
-#"Unk8": {"Offset": 0x35, "Length": 0x1, "Element": "CharacterUnk8Input", "Signed": False},
+# TODO: what does 0x35 control?
+"Unk_35":              {"Offset": 0x35, "Length": 0x1, "Signed": False},
 "Level":               {"Offset": 0x36, "Length": 0x1, "Signed": False},
 "Build":               {"Offset": 0x37, "Length": 0x1, "Signed": True},
 "Weight":              {"Offset": 0x38, "Length": 0x1, "Signed": True},
 
-# these should be signed
 "BaseHP":              {"Offset": 0x39, "Length": 0x1, "Signed": True},
 "BaseStrength":        {"Offset": 0x3A, "Length": 0x1, "Signed": True},
 "BaseMagic":           {"Offset": 0x3B, "Length": 0x1, "Signed": True},
@@ -47,7 +37,6 @@ IntegerDataDictionary = {
 "BaseDefense":         {"Offset": 0x3F, "Length": 0x1, "Signed": True},
 "BaseResistance":      {"Offset": 0x40, "Length": 0x1, "Signed": True},
 
-# these should be unsigned, as ena has a 145 strength growth
 "GrowthHP":            {"Offset": 0x41, "Length": 0x1, "Signed": False},
 "GrowthStrength":      {"Offset": 0x42, "Length": 0x1, "Signed": False},
 "GrowthMagic":         {"Offset": 0x43, "Length": 0x1, "Signed": False},

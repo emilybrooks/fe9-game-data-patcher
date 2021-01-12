@@ -15,7 +15,7 @@ Debug = False;
 
 #-------------------------------------------------------------------------------
 # Patch data
-# Module: files such as fe9data_character or fe9data_class. they each contain
+# Module: files such as fe9unit or fe9class. they each contain
 # dictionaries that describe the data stored in each type of data block
 # data is split up between pointers to strings (StringDataDictionary)
 # and integers (IntegerDataDictionary)
@@ -193,7 +193,7 @@ while True:
 		fe9unit.NumberOfBlocks = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
 		FileReadIndex += 0x4
 
-		# every character gets added to a dictionary,
+		# every unit gets added to a dictionary,
 		# with their PID as the key and their offset in the file as the value
 		for i in range(fe9unit.NumberOfBlocks):
 			PIDPointer = ReadIntFromOffset(FE9DataContents, FileReadIndex, 0x4, False)
