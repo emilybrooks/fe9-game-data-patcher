@@ -15,6 +15,7 @@ IntegerDataDictionary = {
 "SkillIndex":      {"Offset": 0x18, "Length": 0x1, "Signed": False},
 "IconIndex":       {"Offset": 0x19, "Length": 0x1, "Signed": False},
 "SkillPoints":     {"Offset": 0x1A, "Length": 0x1, "Signed": False},
+"Unk_1F":          {"Offset": 0x1F, "Length": 0x1, "Signed": False},
 }
 
 ItemRequiredCount = {"Offset": 0x1B, "Length": 0x1}
