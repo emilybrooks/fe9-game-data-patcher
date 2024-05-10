@@ -1,5 +1,10 @@
-A quick tool I made to modify some game data in Fire Emblem: Path of Radiance.
-It's a work in progress.
+A quick tool I made to modify FE8Data.bin in Fire Emblem: Path of Radiance
+
+<img alt="Patcher window" src="img/patcher.jpg" width=25%>
+
+There's also a viewer that displays the data in FE8Data.bin
+
+<img alt="Game data viewer window" src="img/viewer.jpg" width= 40%>
 
 ## Installing Dependencies
 Download the repository

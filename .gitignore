@@ -126,4 +126,3 @@ dmypy.json
 
 # other
 ignore/
-src/viewer.py
