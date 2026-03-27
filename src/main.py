@@ -5,13 +5,14 @@ import hashlib
 from io_helpers import *
 import fe9LZ77
 import cmp
+from datetime import datetime
 
 # TODO: go through the data and properly document them all
 import fe9unit
 import fe9class
 import fe9item
 
-Debug = False;
+Debug = False
 
 #-------------------------------------------------------------------------------
 # Patch data
@@ -322,7 +323,11 @@ while True:
 		# save the new cmp file
 		with open(NewFile, mode="wb") as File:
 			print("Compressing file...")
+			start = datetime.now()
 			FE9DataContents = fe9LZ77.compress(CMPFile.GetCMPFile())
+			end = datetime.now()
+			delta = end - start
+			print(f"Duration: {delta}")
 			File.write(FE9DataContents)
 		print(f"Wrote to {NewFile}")
 		print("Patched successfully")
