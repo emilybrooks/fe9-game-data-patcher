@@ -11,11 +11,14 @@ Download the repository
 
 In the command line, navigate to the root directory
 
+Create venv
+`python -m venv venv`
+
 Install the dependencies  
-`pip3 install -r requirements.txt`
+`pip install -r requirements.txt`
 
 Install setuptools  
-`pip3 install setuptools`
+`pip install setuptools`
 
 Navigate to ./fe9LZ77module
 
