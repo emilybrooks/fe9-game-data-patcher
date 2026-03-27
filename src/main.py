@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import xml.etree.ElementTree as et
 import hashlib
 
