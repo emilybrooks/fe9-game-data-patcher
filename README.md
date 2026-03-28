@@ -7,23 +7,17 @@ There's also a viewer that displays the data in FE8Data.bin
 <img alt="Game data viewer window" src="img/viewer.jpg" width= 40%>
 
 ## Setup
-(Last tested with Python 3.14.3)
-Download the repository
+1. Navigate terminal to project folder
+2. Run these commands:
 
-In the command line, navigate to the root directory
-
-Create virtual environment
-`python -m venv venv`
-
-Install the dependencies  
-`pip install -r requirements.txt`
-
-Install setuptools  
-`pip install setuptools`
-
-Navigate to ./fe9LZ77module
-
-Build the module  
-`python3 setup.py install`
+```
+py install 3.14.3
+py -V:3.14.3 -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+pip install setuptools
+cd fe9LZ77module
+python3 setup.py install
+```
 
 Launch with patcher.bat and viewer.bat
