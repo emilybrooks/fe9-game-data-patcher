@@ -1,18 +1,72 @@
 import FreeSimpleGUI as sg
 
-from io_helpers import *
-import fe9LZ77
 import cmp
+import fe9LZ77
+import hashlib
+from io_helpers import *
 
 import fe9unit
 import fe9class
 import fe9item
 import fe9skill
 
+sg.change_look_and_feel("SystemDefaultForReal")
+
+#-------------------------------------------------------------------------------
+# get system.cmp file
+#-------------------------------------------------------------------------------
+file_select_layout = [
+	[sg.Text('system.cmp file to open:', key="message")],
+	[sg.Input(), sg.FileBrowse()],
+	[sg.OK()]
+]
+
+file_select_window = sg.Window('Open', file_select_layout)
+
+while True:
+	event, values = file_select_window.read()
+	
+	if event == sg.WIN_CLOSED:
+		quit()
+	
+	GameDataFile = values[0]
+
+	try:
+		with open(GameDataFile, mode="rb") as File:
+			File = File.read()
+			Checksum = hashlib.sha256(File)
+			Checksum = Checksum.hexdigest()
+
+			Version = ""
+			if Checksum == "2d7e1ba67022aa50c9c67e5544288c447654014434960caba97134a3b884c1b4":
+				Version = "Japan"
+			if Checksum == "fd6d9fc346c86f478c0c3acbf9c621b189ec633965f5617e943d26213f697137":
+				Version = "North America"
+			if Checksum == "0b7929179b0ad1d4898d763665e9a3120e6b38d3aa0dc8f5e4759c9969ea269e":
+				Version = "Europe"
+			
+			if Version == "":
+				# invalid system.cmp file
+				pass
+
+			else:
+				# valid file
+				File = bytearray(File)
+				File = fe9LZ77.decompress(File)
+				CMPFile = cmp.CMPFile(File)
+
+				file_select_window.close()
+				break
+	except:
+		# can't open file
+		pass
+
+	# ask for a different file
+	file_select_window["message"].update("Invalid system.cmp file", text_color = "red")
+
 #-------------------------------------------------------------------------------
 # init
 #-------------------------------------------------------------------------------
-FE9DataContents = None
 StringToPointer = {}
 StringsToAdd = {}
 PointerOffsetsToAdd = []
@@ -21,13 +75,6 @@ PIDList = []
 JIDList = []
 IIDList = []
 SIDList = []
-
-GameDataFile = "F:\\Documents\\GitHub\\fe9-game-data-patcher\\ignore\\system_jp_compressed.cmp"
-with open(GameDataFile, mode="rb") as File:
-	File = File.read()
-	File = bytearray(File)
-	File = fe9LZ77.decompress(File)
-	CMPFile = cmp.CMPFile(File)
 
 FE9DataContents = CMPFile.GetFileByName("FE8Data.bin")
 FileReadIndex = 0x2C
@@ -84,8 +131,6 @@ for i in range(fe9skill.NumberOfBlocks):
 #-------------------------------------------------------------------------------
 # GUI Layout
 #-------------------------------------------------------------------------------
-sg.ChangeLookAndFeel("SystemDefaultForReal")
-
 ListboxWidth = 24
 ListboxHeight = 45
 TabUnit = [[sg.Listbox(key="UnitListbox",values=(PIDList),select_mode="LISTBOX_SELECT_MODE_SINGLE",size=(ListboxWidth, ListboxHeight),enable_events=True),],]

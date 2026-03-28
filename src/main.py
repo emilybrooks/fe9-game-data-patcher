@@ -96,7 +96,7 @@ def DebugPrint(String):
 #-------------------------------------------------------------------------------
 # GUI Layout
 #-------------------------------------------------------------------------------
-sg.ChangeLookAndFeel("SystemDefaultForReal")
+sg.change_look_and_feel("SystemDefaultForReal")
 
 layout = [
 [
