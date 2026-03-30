@@ -2,7 +2,6 @@ import argparse
 import cmp
 import fe9LZ77
 import pathlib
-import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", help="The .cmp file to extract")
@@ -22,7 +21,10 @@ with input_file_path.open("rb") as cmp_bytes:
 
     for file_name in cmp_file.Header:
         file_path = pathlib.Path(working_folder, file_name)
+
+        # make sub directories
         file_path.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(file_path, "wb") as file:
             contents = cmp_file.FileDictionary[file_name]
             file.write(contents)
